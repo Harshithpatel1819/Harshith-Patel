@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Product CRUD Application</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { padding: 8px 12px; border: 1px solid #ccc; text-align: left; }
+    input { margin-bottom: 10px; padding: 6px; width: 300px; }
+    button { padding: 6px 12px; margin-right: 5px; }
+  </style>
+</head>
+<body>
+  <h2>Product CRUD Application</h2>
+  <form id="productform">
+    <input type="text" id="product" placeholder="Enter product name..." required><br>
+    <input type="number" id="price" placeholder="Enter product price..." required><br>
+    <button type="submit">ADD / UPDATE</button>
+  </form>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Price</th>
+        <th>Edit</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
+    <tbody id="productbody"></tbody>
+  </table>
+
+  <script>
+    const productform = document.getElementById('productform');
+    const productInput = document.getElementById('product');
+    const priceInput = document.getElementById('price');
+    const productbody = document.getElementById('productbody');
+
+    let products = [];
+    let editIndex = null;
+
+    productform.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const product = productInput.value.trim();
+      const price = parseFloat(priceInput.value);
+
+      if (!product || isNaN(price)) return;
+
+      if (editIndex === null) {
+        products.push({ product, price });
+      } else {
+        products[editIndex] = { product, price };
+        editIndex = null;
+      }
+
+      productform.reset();
+      renderTable();
+    });
+
+    function renderTable() {
+      productbody.innerHTML = '';
+      products.forEach((item, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${item.product}</td>
+          <td>₹${item.price.toFixed(2)}</td>
+          <td><button onclick="editProduct(${index})">Edit</button></td>
+          <td><button onclick="deleteProduct(${index})">Delete</button></td>
+        `;
+        productbody.appendChild(row);
+      });
+    }
+
+    function editProduct(index) {
+      productInput.value = products[index].product;
+      priceInput.value = products[index].price;
+      editIndex = index;
+    }
+
+    function deleteProduct(index) {
+      products.splice(index, 1);
+      renderTable();
+    }
+  </script>
+</body>
+</html>
